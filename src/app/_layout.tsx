@@ -7,6 +7,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import FlashMessage from 'react-native-flash-message';
 import { StyleSheet } from 'react-native';
 import { useState, createContext, useContext } from 'react';
+import { AuthProvider } from '@/lib/auth';
 
 
 export default function RootLayout() {
@@ -46,16 +47,18 @@ function Providers({ children }: { children: React.ReactNode }) {
   
   return (
     <GestureHandlerRootView style={styles.container}>
-      <ThemeContext.Provider value={themeContext}>
-        <ThemeProvider value={navigationTheme}>
-          <APIProvider>
-            <BottomSheetModalProvider>
-              {children}
-              <FlashMessage position="top" />
-            </BottomSheetModalProvider>
-          </APIProvider>
-        </ThemeProvider>
-      </ThemeContext.Provider>
+      <AuthProvider>
+        <ThemeContext.Provider value={themeContext}>
+          <ThemeProvider value={navigationTheme}>
+            <APIProvider>
+              <BottomSheetModalProvider>
+                {children}
+                <FlashMessage position="top" />
+              </BottomSheetModalProvider>
+            </APIProvider>
+          </ThemeProvider>
+        </ThemeContext.Provider>
+      </AuthProvider>
     </GestureHandlerRootView>
   );
 }
