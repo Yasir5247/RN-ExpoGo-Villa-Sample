@@ -1,4 +1,4 @@
-import '../global.css';
+import '../../global.css';
 
 import { Stack } from 'expo-router';
 import { ThemeProvider, DefaultTheme, DarkTheme } from '@react-navigation/native';

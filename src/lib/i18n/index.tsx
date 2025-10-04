@@ -7,9 +7,10 @@ import { resources } from './resources';
 import { getLanguage } from './utils';
 export * from './utils';
 
+// Initialize with default language, then load saved language asynchronously
 i18n.use(initReactI18next).init({
   resources,
-  lng: getLanguage() || Localization.getLocales()[0].languageCode, // TODO: if you are not supporting multiple languages or languages with multiple directions you can set the default value to `en`
+  lng: Localization.getLocales()[0].languageCode || 'en', // Start with device language
   fallbackLng: 'en',
   compatibilityJSON: 'v4', // By default React Native projects does not support Intl
 
@@ -17,6 +18,13 @@ i18n.use(initReactI18next).init({
   interpolation: {
     escapeValue: false, // escape passed in values to avoid XSS injections
   },
+});
+
+// Load saved language asynchronously after initialization
+getLanguage().then((savedLanguage) => {
+  if (savedLanguage) {
+    i18n.changeLanguage(savedLanguage);
+  }
 });
 
 // Is it a RTL language?
