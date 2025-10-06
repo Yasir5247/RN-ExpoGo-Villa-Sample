@@ -19,9 +19,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (tokenData: TokenType) => {
     try {
+      console.log('signIn called with:', tokenData);
       await setToken(tokenData);
+      console.log('Token saved to storage');
       setTokenState(tokenData);
+      console.log('Token state updated');
       setStatus('signIn');
+      console.log('Auth status set to signIn');
     } catch (error) {
       console.error('Error signing in:', error);
     }
