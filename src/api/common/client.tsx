@@ -1,5 +1,6 @@
-import { Env } from '@env';
+import Constants from 'expo-constants';
 import axios from 'axios';
+
 export const client = axios.create({
-  baseURL: Env.API_URL,
+  baseURL: Constants.expoConfig?.extra?.API_URL || 'https://api.example.com',
 });

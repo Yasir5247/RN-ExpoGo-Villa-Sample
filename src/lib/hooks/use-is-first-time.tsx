@@ -26,11 +26,8 @@ export const useIsFirstTime = () => {
 
   const setIsFirstTime = async (value: boolean) => {
     try {
-      console.log('setIsFirstTime called with:', value);
       await setItem(IS_FIRST_TIME, value);
-      console.log('setItem completed, updating state to:', value);
       setIsFirstTimeState(value);
-      console.log('State updated to:', value);
     } catch (error) {
       console.error('Error setting first time status:', error);
     }

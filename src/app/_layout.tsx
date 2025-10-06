@@ -8,6 +8,7 @@ import FlashMessage from 'react-native-flash-message';
 import { StyleSheet } from 'react-native';
 import { useState, createContext, useContext } from 'react';
 import { AuthProvider } from '@/lib/auth';
+import { APIProvider } from '@/api/common/api-provider';
 
 
 export default function RootLayout() {
@@ -25,19 +26,8 @@ export default function RootLayout() {
 // Simple theme context for Expo Go compatibility
 const ThemeContext = createContext({ dark: false });
 
-// Simple API context for Expo Go compatibility  
-const APIContext = createContext({});
-
 function useThemeConfig() {
   return useContext(ThemeContext);
-}
-
-function APIProvider({ children }: { children: React.ReactNode }) {
-  return (
-    <APIContext.Provider value={{}}>
-      {children}
-    </APIContext.Provider>
-  );
 }
 
 function Providers({ children }: { children: React.ReactNode }) {

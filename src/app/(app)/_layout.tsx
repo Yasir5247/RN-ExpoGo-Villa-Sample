@@ -12,7 +12,7 @@ import { useAuth, useIsFirstTime } from '@/lib';
 
 export default function TabLayout() {
   const { status } = useAuth();
-  const [isFirstTime] = useIsFirstTime();
+  const [isFirstTime, , isLoading] = useIsFirstTime();
   const hideSplash = useCallback(async () => {
     await SplashScreen.hideAsync();
   }, []);
@@ -24,6 +24,11 @@ export default function TabLayout() {
       }, 1000);
     }
   }, [hideSplash, status]);
+
+  // Wait for isFirstTime to load from storage before making navigation decisions
+  if (isLoading) {
+    return null; // or a loading spinner
+  }
 
   if (isFirstTime) {
     return <Redirect href="/onboarding" />;

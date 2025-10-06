@@ -46,8 +46,8 @@ export default function Onboarding() {
       <SafeAreaView className="mt-6">
         <Button
           label="Let's Get Started "
-          onPress={() => {
-            setIsFirstTime(false);
+          onPress={async () => {
+            await setIsFirstTime(false);
             router.replace('/login');
           }}
         />
