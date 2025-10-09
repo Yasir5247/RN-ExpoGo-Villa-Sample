@@ -6,12 +6,26 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import FlashMessage from 'react-native-flash-message';
 import { StyleSheet } from 'react-native';
-import { useState, createContext, useContext } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import { AuthProvider } from '@/lib/auth';
 import { APIProvider } from '@/api/common/api-provider';
-
+import { useColorScheme } from 'nativewind';
+import { loadSelectedTheme } from '@/lib';
 
 export default function RootLayout() {
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const prepare = async () => {
+      await loadSelectedTheme();
+      setIsReady(true);
+    };
+    prepare();
+  }, []);
+
+  if (!isReady) {
+    return null;
+  }
   return (
     <Providers>
       <Stack>
@@ -24,21 +38,16 @@ export default function RootLayout() {
 }
 
 // Simple theme context for Expo Go compatibility
-const ThemeContext = createContext({ dark: false });
 
-function useThemeConfig() {
-  return useContext(ThemeContext);
-}
 
 function Providers({ children }: { children: React.ReactNode }) {
-  const [isDark, setIsDark] = useState(false);
-  const themeContext = { dark: isDark };
-  const navigationTheme = isDark ? DarkTheme : DefaultTheme;
-  
+  const { colorScheme } = useColorScheme();
+  const navigationTheme = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
+
   return (
     <GestureHandlerRootView style={styles.container}>
-      <AuthProvider>
-        <ThemeContext.Provider value={themeContext}>
+        <AuthProvider>
+          {/* <ThemeContext.Provider value={themeContext}> */}
           <ThemeProvider value={navigationTheme}>
             <APIProvider>
               <BottomSheetModalProvider>
@@ -47,8 +56,8 @@ function Providers({ children }: { children: React.ReactNode }) {
               </BottomSheetModalProvider>
             </APIProvider>
           </ThemeProvider>
-        </ThemeContext.Provider>
-      </AuthProvider>
+          {/* </ThemeContext.Provider> */}
+        </AuthProvider>
     </GestureHandlerRootView>
   );
 }

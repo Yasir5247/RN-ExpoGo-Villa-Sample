@@ -18,7 +18,7 @@ export const Card = ({ title, body, id }: Props) => {
   return (
     <Link href={`/feed/${id}` as any} asChild>
       <Pressable>
-        <View className="m-2 overflow-hidden rounded-xl  border border-neutral-300 bg-white  dark:bg-neutral-900">
+        <View className="m-2 overflow-hidden rounded-xl bg-white p-2 shadow-md  dark:bg-neutral-800">
           <Image
             className="h-56 w-full overflow-hidden rounded-t-xl"
             contentFit="cover"

@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { Link, Redirect, SplashScreen, Tabs } from 'expo-router';
 import React, { useCallback, useEffect } from 'react';
-
+import colors from '@/components/ui/colors';
 import { Pressable, Text } from '@/components/ui';
 import {
   Feed as FeedIcon,
@@ -9,6 +9,7 @@ import {
   Style as StyleIcon,
 } from '@/components/ui/icons';
 import { useAuth, useIsFirstTime } from '@/lib';
+import { useColorScheme } from 'nativewind';
 
 export default function TabLayout() {
   const { status } = useAuth();
@@ -16,6 +17,7 @@ export default function TabLayout() {
   const hideSplash = useCallback(async () => {
     await SplashScreen.hideAsync();
   }, []);
+  const { colorScheme } = useColorScheme();
 
   useEffect(() => {
     if (status !== 'idle') {
@@ -37,9 +39,14 @@ export default function TabLayout() {
   if (status === 'signOut') {
     return <Redirect href="/login" />;
   }
-  
+
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        tabBarStyle: {
+          backgroundColor: colorScheme === 'dark' ? colors.neutral[800] : '#fff',
+        },
+      }}>
       <Tabs.Screen
         name="index"
         options={{
@@ -73,9 +80,9 @@ export default function TabLayout() {
 
 const CreateNewPostLink = () => {
   return (
-    <Link href={"/feed/add-post" as any} asChild>
+    <Link href={'/feed/add-post' as any} asChild>
       <Pressable>
-        <Text className="px-3 text-primary-300">Create</Text>
+        <Text className="text-primary-300 px-3">Create</Text>
       </Pressable>
     </Link>
   );
