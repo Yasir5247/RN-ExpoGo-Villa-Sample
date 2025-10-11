@@ -1,9 +1,9 @@
 import { makeAutoObservable } from 'mobx';
 import { hydrateStore, makePersistable } from 'mobx-persist-store';
+import { colorScheme } from 'nativewind';
 import { AppearanceMode, PVoid, UIAppearance } from './types';
-import * as Updates from "expo-updates";
+// import * as Updates from "expo-updates";
 
-export type ColorSchemeType = 'light' | 'dark' | 'system';
 
 export class UIThemeStore {
   isSystemAppearance = false;
@@ -12,7 +12,7 @@ export class UIThemeStore {
   setAppearanceMode = async (v: UIAppearance): Promise<void> => {
     this.isSystemAppearance = v === "System";
     this.appearance = this.appearanceFromUIToInternal(v);
-    await Updates.reloadAsync();
+    // await Updates.reloadAsync();
   };
 
   get appearanceName(): UIAppearance {
@@ -30,18 +30,22 @@ export class UIThemeStore {
   };
 
   // Alias methods for consistency with existing hooks
-  get selectedTheme(): ColorSchemeType {
-    if (this.isSystemAppearance) return 'system';
-    return this.appearance;
+  get selectedTheme(): UIAppearance {
+    if (this.isSystemAppearance) return 'System';
+    return this.appearanceFromInternalToUI(this.appearance);
   }
 
-  setSelectedTheme = (theme: ColorSchemeType): void => {
-    if (theme === 'system') {
+  setSelectedTheme = (theme: UIAppearance): void => {
+    if (theme === 'System') {
       this.isSystemAppearance = true;
     } else {
       this.isSystemAppearance = false;
-      this.appearance = theme;
+      this.appearance = this.appearanceFromUIToInternal(theme);
     }
+    
+    // Sync with NativeWind
+    const nativeWindTheme = theme === 'System' ? 'system' : theme.toLowerCase() as 'light' | 'dark' | 'system';
+    colorScheme.set(nativeWindTheme);
   };
 
   constructor() {
@@ -58,6 +62,10 @@ export class UIThemeStore {
 
   hydrate = async (): PVoid => {
     await hydrateStore(this);
+    // Restore theme after hydration
+    const theme = this.selectedTheme;
+    const nativeWindTheme = theme === 'System' ? 'system' : theme.toLowerCase() as 'light' | 'dark' | 'system';
+    colorScheme.set(nativeWindTheme);
   };
 }
 

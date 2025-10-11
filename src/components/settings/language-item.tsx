@@ -25,7 +25,7 @@ export const LanguageItem = observer(() => {
       { label: translate('settings.english'), value: 'en' },
       { label: translate('settings.arabic'), value: 'ar' },
     ],
-    []
+    [uiLanguage.language]
   );
 
   const selectedLanguage = React.useMemo(
