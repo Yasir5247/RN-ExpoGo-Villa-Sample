@@ -32,6 +32,7 @@
     "expo-status-bar": "~2.2.3",
     "expo-symbols": "~0.4.5",
     "expo-system-ui": "~5.0.11",
+    "expo-updates": "^29.0.12",
     "i18next": "^25.5.3",
     "lodash.memoize": "^4.1.2",
     "mobx": "^6.15.0",

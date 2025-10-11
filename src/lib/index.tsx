@@ -1,3 +1,2 @@
-export * from './hooks';
-export * from './i18n';
-// export * from './utils';
+export { translate } from './i18n';
+export type { TxKeyPath } from './i18n/types';

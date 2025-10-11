@@ -37,11 +37,6 @@ export default observer(function Settings() {
             <ThemeItem />
           </ItemsContainer>
 
-          {/* <ItemsContainer title="settings.about">
-            <Item text="settings.app_name" value={Env.NAME} />
-            <Item text="settings.version" value={Env.VERSION} />
-          </ItemsContainer> */}
-
           <ItemsContainer title="settings.support_us">
             <Item
               text="settings.share"
@@ -74,6 +69,11 @@ export default observer(function Settings() {
               onPress={() => {}}
             />
           </ItemsContainer>
+
+          {/* <ItemsContainer title="settings.about">
+            <Item text="settings.app_name" value={Env.NAME} />
+            <Item text="settings.version" value={Env.VERSION} />
+          </ItemsContainer> */}
 
           <View className="my-8">
             <ItemsContainer>

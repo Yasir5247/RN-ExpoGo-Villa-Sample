@@ -1,22 +1,24 @@
 import React from 'react';
+import { observer } from 'mobx-react-lite';
 
 import type { OptionType } from '@/components/ui';
 import { Options, useModal } from '@/components/ui';
-import type { ColorSchemeType } from '@/stores';
-import { translate, useSelectedTheme } from '@/lib';
+import { translate } from '@/lib';
+import { useStores } from '@/stores';
+import type { AppearanceMode } from '@/stores/types';
 
 import { Item } from './item';
 
-export const ThemeItem = () => {
-  const { selectedTheme, setSelectedTheme } = useSelectedTheme();
+export const ThemeItem = observer(() => {
+  const { uiTheme } = useStores();
   const modal = useModal();
 
   const onSelect = React.useCallback(
     (option: OptionType) => {
-      setSelectedTheme(option.value as ColorSchemeType);
+      uiTheme.setSelectedTheme(option.value as AppearanceMode);
       modal.dismiss();
     },
-    [setSelectedTheme, modal]
+    [uiTheme, modal]
   );
 
   const themes = React.useMemo(
@@ -29,8 +31,8 @@ export const ThemeItem = () => {
   );
 
   const theme = React.useMemo(
-    () => themes.find((t) => t.value === selectedTheme),
-    [selectedTheme, themes]
+    () => themes.find((t) => t.value === uiTheme.selectedTheme),
+    [uiTheme.selectedTheme, themes]
   );
 
   return (
@@ -48,4 +50,4 @@ export const ThemeItem = () => {
       />
     </>
   );
-};
+});

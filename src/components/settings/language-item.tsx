@@ -1,22 +1,23 @@
 import * as React from 'react';
+import { observer } from 'mobx-react-lite';
 
 import type { OptionType } from '@/components/ui';
 import { Options, useModal } from '@/components/ui';
-import { useSelectedLanguage } from '@/lib';
 import { translate } from '@/lib';
+import { useStores } from '@/stores';
 import type { Language } from '@/lib/i18n/resources';
 
 import { Item } from './item';
 
-export const LanguageItem = () => {
-  const { language, setLanguage } = useSelectedLanguage();
+export const LanguageItem = observer(() => {
+  const { uiLanguage } = useStores();
   const modal = useModal();
   const onSelect = React.useCallback(
     (option: OptionType) => {
-      setLanguage(option.value as Language);
+      uiLanguage.setLanguage(option.value as Language);
       modal.dismiss();
     },
-    [setLanguage, modal]
+    [uiLanguage, modal]
   );
 
   const langs = React.useMemo(
@@ -28,8 +29,8 @@ export const LanguageItem = () => {
   );
 
   const selectedLanguage = React.useMemo(
-    () => langs.find((lang) => lang.value === language),
-    [language, langs]
+    () => langs.find((lang) => lang.value === uiLanguage.language),
+    [uiLanguage.language, langs]
   );
 
   return (
@@ -47,4 +48,4 @@ export const LanguageItem = () => {
       />
     </>
   );
-};
+});

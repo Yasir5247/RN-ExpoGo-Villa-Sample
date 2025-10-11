@@ -3,33 +3,37 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { I18nManager } from 'react-native';
 
+import { stores } from '@/stores';
 import { resources } from './resources';
-import { getLanguage } from './utils';
-export * from './utils';
 
-// Initialize with default language, then load saved language
+export type { TxKeyPath } from './types';
+
+// Initialize i18next
 i18n.use(initReactI18next).init({
   resources,
-  lng: Localization.getLocales()[0].languageCode || 'en', // Start with device language
+  lng: stores.uiLanguage.language || Localization.getLocales()[0]?.languageCode || 'en',
   fallbackLng: 'en',
-  compatibilityJSON: 'v4', // By default React Native projects does not support Intl
-
-  // allows integrating dynamic values into translations.
+  compatibilityJSON: 'v4',
   interpolation: {
-    escapeValue: false, // escape passed in values to avoid XSS injections
+    escapeValue: false,
   },
 });
 
-// Load saved language synchronously after initialization
-const savedLanguage = getLanguage();
-if (savedLanguage) {
-  i18n.changeLanguage(savedLanguage);
-}
-
-// Is it a RTL language?
-export const isRTL: boolean = i18n.dir() === 'rtl';
-
+// Setup RTL
+const isRTL = i18n.language === 'ar';
 I18nManager.allowRTL(isRTL);
 I18nManager.forceRTL(isRTL);
+
+// Translation function - accesses store to make it reactive
+export const translate = (key: string, options?: any): string => {
+  // Access the language to trigger re-renders in observer components
+  const lang = stores.uiLanguage.language;
+  return i18n.t(key, options) as string;
+};
+
+// Sync i18next with language change
+export const syncLanguage = (lang: string) => {
+  i18n.changeLanguage(lang);
+};
 
 export default i18n;
