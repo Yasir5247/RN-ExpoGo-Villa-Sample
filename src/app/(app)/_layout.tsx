@@ -1,17 +1,17 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { Link, Redirect, Tabs } from 'expo-router';
 import React from 'react';
-import { observer } from 'mobx-react-lite';
 
 import { Pressable, Text } from '@/components/ui';
 import {
   Feed as FeedIcon,
   Settings as SettingsIcon,
   Style as StyleIcon,
+  Home as ProfileIcon,
 } from '@/components/ui/icons';
 import { useAuth } from '@/app/providers/auth/auth-provider';
 
-export default observer(function TabLayout() {
+export default function TabLayout() {
   const { status, isFirstTime } = useAuth();
 
   if (isFirstTime) {
@@ -43,6 +43,15 @@ export default observer(function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          headerShown: false,
+          tabBarIcon: ({ color }) => <ProfileIcon color={color} />,
+          tabBarButtonTestID: 'profile-tab',
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',
@@ -53,7 +62,7 @@ export default observer(function TabLayout() {
       />
     </Tabs>
   );
-});
+}
 
 const CreateNewPostLink = () => {
   return (

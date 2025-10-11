@@ -1,6 +1,7 @@
 import React from 'react';
 // import { Env } from '@env';
 import { useColorScheme } from 'nativewind';
+import { observer } from 'mobx-react-lite';
 
 import { Item } from '@/components/settings/item';
 import { ItemsContainer } from '@/components/settings/items-container';
@@ -17,7 +18,7 @@ import { Github, Rate, Share, Support, Website } from '@/components/ui/icons';
 import { translate } from '@/lib';
 import { useAuth } from '@/app/providers/auth/auth-provider';
 
-export default function Settings() {
+export default observer(function Settings() {
   const { signOut } = useAuth();
   const { colorScheme } = useColorScheme();
   const iconColor =
@@ -83,4 +84,4 @@ export default function Settings() {
       </ScrollView>
     </>
   );
-}
+});

@@ -39,13 +39,9 @@ export const changeLanguage = (lang: Language) => {
 };
 
 export const useSelectedLanguage = () => {
-  useEffect(() => {
-    // Load language from store and apply it
-    if (stores.ui.language) {
-      changeLanguage(stores.ui.language);
-    }
-  }, []);
-
+  // Don't change language on mount - it's already set during app initialization
+  // Only change when user explicitly selects a new language
+  
   const setLanguage = useCallback(
     (lang: Language) => {
       stores.ui.setLanguage(lang);
