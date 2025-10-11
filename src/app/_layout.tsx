@@ -1,17 +1,49 @@
 import '../../global.css';
 
-import { Stack } from 'expo-router';
-import { ThemeProvider, DefaultTheme, DarkTheme } from '@react-navigation/native';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import FlashMessage from 'react-native-flash-message';
-import { StyleSheet } from 'react-native';
-import { useState, createContext, useContext } from 'react';
-import { AuthProvider } from '@/lib/auth';
-import { APIProvider } from '@/api/common/api-provider';
+import { Stack, SplashScreen } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { hydrateStores } from '@/stores';
+import { Providers } from './providers';
 
+// Prevent the splash screen from auto-hiding
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        // Hydrate all stores from AsyncStorage
+        await hydrateStores();
+        setIsHydrated(true);
+      } catch (error) {
+        console.error('Failed to hydrate stores:', error);
+        setIsHydrated(true); // Continue anyway
+      }
+    };
+
+    initializeApp();
+  }, []);
+
+  useEffect(() => {
+    if (isHydrated) {
+      // Hide splash screen once the app is ready
+      const hideSplash = async () => {
+        await SplashScreen.hideAsync();
+      };
+      
+      // Small delay to ensure smooth transition
+      setTimeout(() => {
+        hideSplash();
+      }, 500);
+    }
+  }, [isHydrated]);
+
+  if (!isHydrated) {
+    return null; // or a loading screen
+  }
+
   return (
     <Providers>
       <Stack>
@@ -23,38 +55,4 @@ export default function RootLayout() {
   );
 }
 
-// Simple theme context for Expo Go compatibility
-const ThemeContext = createContext({ dark: false });
 
-function useThemeConfig() {
-  return useContext(ThemeContext);
-}
-
-function Providers({ children }: { children: React.ReactNode }) {
-  const [isDark, setIsDark] = useState(false);
-  const themeContext = { dark: isDark };
-  const navigationTheme = isDark ? DarkTheme : DefaultTheme;
-  
-  return (
-    <GestureHandlerRootView style={styles.container}>
-      <AuthProvider>
-        <ThemeContext.Provider value={themeContext}>
-          <ThemeProvider value={navigationTheme}>
-            <APIProvider>
-              <BottomSheetModalProvider>
-                {children}
-                <FlashMessage position="top" />
-              </BottomSheetModalProvider>
-            </APIProvider>
-          </ThemeProvider>
-        </ThemeContext.Provider>
-      </AuthProvider>
-    </GestureHandlerRootView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

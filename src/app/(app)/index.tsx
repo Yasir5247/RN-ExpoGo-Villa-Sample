@@ -8,6 +8,7 @@ import { EmptyList, FocusAwareStatusBar, Text, View } from '@/components/ui';
 
 export default function Feed() {
   const { data, isPending, isError } = usePosts();
+  
   const renderItem = React.useCallback(
     ({ item }: { item: Post }) => <Card {...item} />,
     []

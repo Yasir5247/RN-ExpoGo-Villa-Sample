@@ -4,12 +4,11 @@ import React from 'react';
 import type { LoginFormProps } from '@/components/login-form';
 import { LoginForm } from '@/components/login-form';
 import { FocusAwareStatusBar } from '@/components/ui';
-import { useAuth, useIsFirstTime } from '@/lib';
+import { useAuth } from '@/app/providers/auth/auth-provider';
 
 export default function Login() {
   const router = useRouter();
-  const { signIn } = useAuth();
-  const [, setIsFirstTime] = useIsFirstTime();
+  const { signIn, setIsFirstTime } = useAuth();
 
   const onSubmit: LoginFormProps['onSubmit'] = async (data) => {
     console.log(data);
@@ -17,6 +16,7 @@ export default function Login() {
     await signIn({ access: 'access-token', refresh: 'refresh-token' });
     router.replace('/');
   };
+  
   return (
     <>
       <FocusAwareStatusBar />

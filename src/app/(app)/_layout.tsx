@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
-import { Link, Redirect, SplashScreen, Tabs } from 'expo-router';
-import React, { useCallback, useEffect } from 'react';
+import { Link, Redirect, Tabs } from 'expo-router';
+import React from 'react';
+import { observer } from 'mobx-react-lite';
 
 import { Pressable, Text } from '@/components/ui';
 import {
@@ -8,34 +9,17 @@ import {
   Settings as SettingsIcon,
   Style as StyleIcon,
 } from '@/components/ui/icons';
-import { useAuth, useIsFirstTime } from '@/lib';
+import { useAuth } from '@/app/providers/auth/auth-provider';
 
-export default function TabLayout() {
-  const { status } = useAuth();
-  const [isFirstTime, , isLoading] = useIsFirstTime();
-  const hideSplash = useCallback(async () => {
-    await SplashScreen.hideAsync();
-  }, []);
-
-  useEffect(() => {
-    if (status !== 'idle') {
-      setTimeout(() => {
-        hideSplash();
-      }, 1000);
-    }
-  }, [hideSplash, status]);
-
-  // Wait for isFirstTime to load from storage before making navigation decisions
-  if (isLoading) {
-    return null; // or a loading spinner
-  }
+export default observer(function TabLayout() {
+  const { status, isFirstTime } = useAuth();
 
   if (isFirstTime) {
-    return <Redirect href="/onboarding" />;
+    return <Redirect href="/(auth)/onboarding" />;
   }
 
   if (status === 'signOut') {
-    return <Redirect href="/login" />;
+    return <Redirect href="/(auth)/login" />;
   }
   
   return (
@@ -69,7 +53,7 @@ export default function TabLayout() {
       />
     </Tabs>
   );
-}
+});
 
 const CreateNewPostLink = () => {
   return (

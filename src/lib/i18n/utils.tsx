@@ -1,11 +1,11 @@
 import type TranslateOptions from 'i18next';
 import i18n from 'i18next';
 import memoize from 'lodash.memoize';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { I18nManager, NativeModules, Platform } from 'react-native';
 // import RNRestart from 'react-native-restart';
 
-import { getItem, setItem } from '../storage';
+import { stores } from '@/stores';
 import type { Language, resources } from './resources';
 import type { RecursiveKeyOf } from './types';
 
@@ -14,7 +14,7 @@ export type TxKeyPath = RecursiveKeyOf<DefaultLocale>;
 
 export const LOCAL = 'local';
 
-export const getLanguage = async () => await getItem<Language>(LOCAL);
+export const getLanguage = () => stores.ui.language;
 
 export const translate = memoize(
   (key: TxKeyPath, options = undefined) =>
@@ -39,24 +39,20 @@ export const changeLanguage = (lang: Language) => {
 };
 
 export const useSelectedLanguage = () => {
-  const [language, setLang] = useState<Language | undefined>();
-
   useEffect(() => {
-    const loadLanguage = async () => {
-      const storedLang = await getItem<Language>(LOCAL);
-      setLang(storedLang || undefined);
-    };
-    loadLanguage();
+    // Load language from store and apply it
+    if (stores.ui.language) {
+      changeLanguage(stores.ui.language);
+    }
   }, []);
 
   const setLanguage = useCallback(
-    async (lang: Language) => {
-      setLang(lang);
-      await setItem(LOCAL, lang);
-      if (lang !== undefined) changeLanguage(lang);
+    (lang: Language) => {
+      stores.ui.setLanguage(lang);
+      changeLanguage(lang);
     },
     []
   );
 
-  return { language: language as Language, setLanguage };
+  return { language: stores.ui.language, setLanguage };
 };

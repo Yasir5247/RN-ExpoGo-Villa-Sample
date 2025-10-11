@@ -10,10 +10,10 @@ import {
   View,
 } from '@/components/ui';
 
-import { useIsFirstTime } from '@/lib/hooks';
+import { useAuth } from '@/app/providers/auth/auth-provider';
 
 export default function Onboarding() {
-  const [_, setIsFirstTime] = useIsFirstTime();
+  const { setIsFirstTime } = useAuth();
   const router = useRouter();
 
   return (

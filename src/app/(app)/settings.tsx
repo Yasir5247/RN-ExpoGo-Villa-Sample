@@ -14,17 +14,18 @@ import {
   View,
 } from '@/components/ui';
 import { Github, Rate, Share, Support, Website } from '@/components/ui/icons';
-import { translate, useAuth } from '@/lib';
+import { translate } from '@/lib';
+import { useAuth } from '@/app/providers/auth/auth-provider';
 
 export default function Settings() {
   const { signOut } = useAuth();
   const { colorScheme } = useColorScheme();
   const iconColor =
     colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[500];
+    
   return (
     <>
       <FocusAwareStatusBar />
-
       <ScrollView>
         <View className="flex-1 px-4 pt-16 ">
           <Text className="text-xl font-bold">
@@ -75,7 +76,7 @@ export default function Settings() {
 
           <View className="my-8">
             <ItemsContainer>
-              <Item text="settings.logout" onPress={signOut} />
+              <Item text="settings.logout" onPress={() => signOut()} />
             </ItemsContainer>
           </View>
         </View>

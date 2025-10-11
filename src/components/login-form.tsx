@@ -26,9 +26,11 @@ export type LoginFormProps = {
 };
 
 export const LoginForm = ({ onSubmit = () => {} }: LoginFormProps) => {
+
   const { handleSubmit, control } = useForm<FormType>({
     resolver: zodResolver(schema),
   });
+  
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}

@@ -7,7 +7,7 @@ import { resources } from './resources';
 import { getLanguage } from './utils';
 export * from './utils';
 
-// Initialize with default language, then load saved language asynchronously
+// Initialize with default language, then load saved language
 i18n.use(initReactI18next).init({
   resources,
   lng: Localization.getLocales()[0].languageCode || 'en', // Start with device language
@@ -20,12 +20,11 @@ i18n.use(initReactI18next).init({
   },
 });
 
-// Load saved language asynchronously after initialization
-getLanguage().then((savedLanguage) => {
-  if (savedLanguage) {
-    i18n.changeLanguage(savedLanguage);
-  }
-});
+// Load saved language synchronously after initialization
+const savedLanguage = getLanguage();
+if (savedLanguage) {
+  i18n.changeLanguage(savedLanguage);
+}
 
 // Is it a RTL language?
 export const isRTL: boolean = i18n.dir() === 'rtl';
