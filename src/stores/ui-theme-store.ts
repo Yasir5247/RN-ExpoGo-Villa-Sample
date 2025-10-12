@@ -1,6 +1,9 @@
 import { makeAutoObservable } from 'mobx';
 import { hydrateStore, makePersistable } from 'mobx-persist-store';
 import { colorScheme } from 'nativewind';
+import { Appearance } from 'react-native';
+import type { Theme } from '@react-navigation/native';
+import { DarkTheme, LightTheme } from '@/lib/theme';
 import { AppearanceMode, PVoid, UIAppearance } from './types';
 // import * as Updates from "expo-updates";
 
@@ -8,6 +11,8 @@ import { AppearanceMode, PVoid, UIAppearance } from './types';
 export class UIThemeStore {
   isSystemAppearance = false;
   appearance: AppearanceMode = "light";
+  systemColorScheme: AppearanceMode | null = Appearance.getColorScheme() || 'light';
+  private appearanceListener: any = null;
 
   setAppearanceMode = async (v: UIAppearance): Promise<void> => {
     this.isSystemAppearance = v === "System";
@@ -48,6 +53,34 @@ export class UIThemeStore {
     colorScheme.set(nativeWindTheme);
   };
 
+  // Get React Navigation theme based on current appearance
+  get navigationTheme(): Theme {
+    if (this.isSystemAppearance) {
+      return this.systemColorScheme === 'dark' ? DarkTheme : LightTheme;
+    }
+    return this.appearance === 'dark' ? DarkTheme : LightTheme;
+  }
+
+  // Get the current effective appearance mode (resolves System to actual mode)
+  get effectiveAppearance(): AppearanceMode {
+    if (this.isSystemAppearance) {
+      return this.systemColorScheme || 'light';
+    }
+    return this.appearance;
+  }
+
+  private setupAppearanceListener = () => {
+    // Clean up existing listener if any
+    if (this.appearanceListener) {
+      this.appearanceListener.remove();
+    }
+
+    // Listen to system appearance changes
+    this.appearanceListener = Appearance.addChangeListener(({ colorScheme }) => {
+      this.systemColorScheme = colorScheme || 'light';
+    });
+  };
+
   constructor() {
     makeAutoObservable(this);
     makePersistable(this, {
@@ -58,14 +91,20 @@ export class UIThemeStore {
       ],
       debugMode: false,
     });
+    
+    // Setup appearance listener
+    this.setupAppearanceListener();
   }
+
+  // Cleanup method
+  dispose = () => {
+    if (this.appearanceListener) {
+      this.appearanceListener.remove();
+    }
+  };
 
   hydrate = async (): PVoid => {
     await hydrateStore(this);
-    // Restore theme after hydration
-    const theme = this.selectedTheme;
-    const nativeWindTheme = theme === 'System' ? 'system' : theme.toLowerCase() as 'light' | 'dark' | 'system';
-    colorScheme.set(nativeWindTheme);
   };
 }
 
