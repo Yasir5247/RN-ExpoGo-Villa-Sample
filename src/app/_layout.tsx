@@ -19,7 +19,7 @@ export default function RootLayout() {
         options={{
           title: "Details",
           headerShown: true,
-          presentation: "modal", // open like a modal
+          //presentation: "modal", // open like a modal
         }}
       />
     </Stack>
