@@ -5,11 +5,23 @@ import { Stack } from 'expo-router';
 export default function RootLayout() {
   
   return (
-    <Stack screenOptions={{
-      headerShown: true,           // show the header by default
-      headerTitleAlign: "center",  // center the title
-    }}>
-      <Stack.Screen name="index" options={{ title: "Home"}} />
+    <Stack>
+      <Stack.Screen
+        name="index"
+        options={{
+          title: "Home Screen",
+          headerStyle: { backgroundColor: "#007AFF" },
+          headerTintColor: "#fff",
+        }}
+      />
+      <Stack.Screen
+        name="details"
+        options={{
+          title: "Details",
+          headerShown: true,
+          presentation: "modal", // open like a modal
+        }}
+      />
     </Stack>
   );
 }
