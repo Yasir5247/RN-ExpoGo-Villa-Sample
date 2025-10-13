@@ -1,47 +1,66 @@
-import { Button } from "@/components/button";
-import { Link, router } from "expo-router";
 import { View, Text, StyleSheet } from "react-native";
+import { Link } from "expo-router";
 
-export default function ScreenOne(){
+export default function HomeScreen(){
   return (
     <View style={styles.container}>
-      <Text style={{ fontSize: 24 }}>Home Screen</Text>
-
-      {/* Declarative navigation */}
-      <Link href="/details/42/details" style={{ color: "#007AFF", marginTop: 20 }}>
-        Go to Details
-      </Link>
-
-      {/* With params */}
-      <Link href={{ pathname: "/details/[id]/details", params: { id: "42" } }}>
-        Go to Details (id = 42)
-      </Link>
-
-      {/* Programmatic navigation */}
-      <Button
-        label="router.push to Details (id = 99)" 
-        onPress={() => router.push("/details/99/details")} 
-      />
-
-      <Button
-        variant="outline"
-        label="router.push with params" 
-        onPress={() => router.push({ 
-          pathname: "/details/[id]/details", 
-          params: { 
-            id: "123" 
-          } 
-        })
-      } 
-      />
+      <Text style={styles.title}>🏠 Welcome to Villa App</Text>
+      <Text style={styles.subtitle}>Nested Stack Layouts Demo</Text>
+      
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Navigate to nested stacks:</Text>
+        
+        {/* Link to Shop Stack (nested navigation) */}
+        <Link href="/(shop)" style={styles.link}>
+          🛍️ Browse Shop (Nested Stack)
+        </Link>
+        
+        {/* Link directly to product details */}
+        <Link 
+          href={{ pathname: "/(shop)/product/[id]", params: { id: "123" } }} 
+          style={styles.link}
+        >
+          📦 View Product #123
+        </Link>
+        
+        {/* Link to Auth Stack (nested navigation) */}
+        <Link href="/(auth)/login" style={styles.link}>
+          🔐 Login (Auth Stack)
+        </Link>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { 
-    flex: 1,
+    flex: 1, 
     justifyContent: "center", 
-    alignItems: "center" 
+    alignItems: "center",
+    padding: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#666",
+    marginBottom: 32,
+  },
+  section: {
+    gap: 16,
+    alignItems: "center",
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  link: {
+    color: "#007AFF",
+    fontSize: 16,
+    paddingVertical: 8,
   }
 });
