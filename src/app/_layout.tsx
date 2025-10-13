@@ -1,16 +1,48 @@
 import '../../global.css';
 
-import { Stack } from 'expo-router';
+import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function RootLayout() {
-  
   return (
-    <Stack screenOptions={{
-      headerShown: true,           // show the header by default
-      headerTitleAlign: "center",  // center the title
-    }}>
-      <Stack.Screen name="index" options={{ title: "Home"}} />
-    </Stack>
+    <Tabs
+      screenOptions={{
+        headerShown: true,
+        tabBarActiveTintColor: "#007AFF",
+        tabBarInactiveTintColor: "#888",
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Home",
+          tabBarLabel: "Home",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{ 
+          title: "Profile", 
+          tabBarLabel: "Profile",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{ 
+          title: "Settings", 
+          tabBarLabel: "Settings",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings-outline" size={size} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
   );
 }
 
