@@ -10,7 +10,7 @@ export default function RootLayout() {
         name="index"
         options={{
           title: "Home Screen",
-          headerStyle: { backgroundColor: "#007AFF" },
+          headerStyle: { backgroundColor: "#000000" },
           headerTintColor: "#fff",
         }}
       />
