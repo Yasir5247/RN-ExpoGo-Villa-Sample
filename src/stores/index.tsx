@@ -1,12 +1,24 @@
 import React, { createContext, useContext, useReducer, useCallback, useEffect, ReactNode } from 'react';
+import { makeAutoObservable } from 'mobx';
+import { makePersistable } from 'mobx-persist-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**
- * TODO STATE MANAGEMENT
+ * ============================================================
+ * STATE MANAGEMENT DEMO - MobX vs React Context
+ * ============================================================
  * 
- * This demonstrates React Context + useReducer pattern
- * A minimalist example for learning state management
+ * This file demonstrates two approaches:
+ * 1. MobX with makePersistable (recommended for large apps)
+ * 2. React Context + useReducer (built-in React API)
+ * 
+ * To use MobX: wrap components with observer() and use useStores()
+ * To use Context: use useTodoContext() directly
  */
+
+// ============================================================
+// PART 1: MobX STORE WITH PERSISTENCE
+// ============================================================
 
 export interface Todo {
   id: string;
@@ -14,6 +26,125 @@ export interface Todo {
   completed: boolean;
   createdAt: Date;
 }
+
+/**
+ * MobX Store Example with Persistence
+ * 
+ * Key features:
+ * - makeAutoObservable() for reactivity
+ * - makePersistable() for automatic AsyncStorage persistence
+ * - Computed values (filteredTodos, counts) automatically cached
+ * - Actions (addTodo, toggleTodo, etc.)
+ * 
+ * Usage:
+ * const { todoStore } = useStores();
+ * 
+ * Wrap component with observer():
+ * export const MyComponent = observer(() => {
+ *   const { todoStore } = useStores();
+ *   return <Text>{todoStore.activeCount}</Text>;
+ * });
+ */
+export class TodoStore {
+  todos: Todo[] = [];
+  filter: 'all' | 'active' | 'completed' = 'all';
+
+  constructor() {
+    makeAutoObservable(this);
+    
+    // Auto-persist to AsyncStorage with makePersistable
+    makePersistable(this, {
+      name: 'TodoStore',
+      properties: ['todos', 'filter'],
+      storage: AsyncStorage,
+    });
+  }
+
+  // ========== ACTIONS ==========
+  
+  addTodo(title: string) {
+    const newTodo: Todo = {
+      id: Date.now().toString(),
+      title,
+      completed: false,
+      createdAt: new Date(),
+    };
+    this.todos.push(newTodo);
+  }
+
+  removeTodo(id: string) {
+    this.todos = this.todos.filter(todo => todo.id !== id);
+  }
+
+  toggleTodo(id: string) {
+    const todo = this.todos.find(t => t.id === id);
+    if (todo) {
+      todo.completed = !todo.completed;
+    }
+  }
+
+  setFilter(filter: 'all' | 'active' | 'completed') {
+    this.filter = filter;
+  }
+
+  clearCompleted() {
+    this.todos = this.todos.filter(todo => !todo.completed);
+  }
+
+  // ========== COMPUTED VALUES (auto-memoized by MobX) ==========
+  
+  get filteredTodos(): Todo[] {
+    if (this.filter === 'active') {
+      return this.todos.filter(todo => !todo.completed);
+    }
+    if (this.filter === 'completed') {
+      return this.todos.filter(todo => todo.completed);
+    }
+    return this.todos;
+  }
+
+  get completedCount(): number {
+    return this.todos.filter(todo => todo.completed).length;
+  }
+
+  get totalCount(): number {
+    return this.todos.length;
+  }
+
+  get activeCount(): number {
+    return this.totalCount - this.completedCount;
+  }
+
+  async hydrate() {
+    // makePersistable handles this automatically
+  }
+}
+
+// Create singleton store instance
+export const todoStore = new TodoStore();
+
+// MobX Context
+const MobXContext = createContext<{ todoStore: TodoStore } | null>(null);
+
+export function MobXProvider({ children }: { children: ReactNode }) {
+  return (
+    <MobXContext.Provider value={{ todoStore }}>
+      {children}
+    </MobXContext.Provider>
+  );
+}
+
+export function useStores() {
+  const context = useContext(MobXContext);
+  if (!context) {
+    throw new Error('useStores must be used within MobXProvider');
+  }
+  return context;
+}
+
+// ============================================================
+// PART 2: REACT CONTEXT + REDUCER WITH PERSISTENCE
+// ============================================================
 
 interface TodoState {
   todos: Todo[];
@@ -24,11 +155,11 @@ type TodoAction =
   | { type: 'ADD_TODO'; payload: string }
   | { type: 'REMOVE_TODO'; payload: string }
   | { type: 'TOGGLE_TODO'; payload: string }
-  | { type: 'CLEAR_COMPLETED' }
   | { type: 'SET_FILTER'; payload: 'all' | 'active' | 'completed' }
+  | { type: 'CLEAR_COMPLETED' }
   | { type: 'HYDRATE'; payload: Todo[] };
 
-interface TodoContextType {
+export interface TodoContextType {
   state: TodoState;
   addTodo: (title: string) => void;
   removeTodo: (id: string) => void;
@@ -96,6 +227,15 @@ function todoReducer(state: TodoState, action: TodoAction): TodoState {
   }
 }
 
+/**
+ * React Context Provider
+ * 
+ * Handles persistence manually with:
+ * - useEffect to persist todos to AsyncStorage
+ * - useEffect to hydrate todos from AsyncStorage
+ * - useMemo for derived values
+ * - useCallback for stable action references
+ */
 export function TodoProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(todoReducer, initialState);
 
@@ -139,7 +279,7 @@ export function TodoProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'CLEAR_COMPLETED' });
   }, []);
 
-  // Persist to AsyncStorage
+  // Persist to AsyncStorage (manual approach)
   useEffect(() => {
     const persistTodos = async () => {
       try {
