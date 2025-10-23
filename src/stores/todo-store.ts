@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import { makePersistable } from 'mobx-persist-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Todo } from './types';
 
 /**
  * TodoStore - MobX Example with Persistence
@@ -27,12 +28,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
  * });
  */
 
-export interface Todo {
-  id: string;
-  title: string;
-  completed: boolean;
-  createdAt: Date;
-}
+
 
 export class TodoStore {
   // Observable properties
