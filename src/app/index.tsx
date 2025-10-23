@@ -9,34 +9,28 @@ import {
   SafeAreaView,
   StatusBar,
 } from 'react-native';
-import { useTodoContext } from '@/stores';
+import { observer } from 'mobx-react-lite';
+import { useStores } from '@/stores';
 
 /**
- * TODO APP - State Management Demo
+ * TODO APP - State Management Demo with MobX
  * 
- * This demonstrates React Context + useReducer for state management
- * See src/stores for the TodoStore implementation
+ * This demonstrates:
+ * - MobX TodoStore with makeAutoObservable
+ * - Persistence with makePersistable
+ * - Reactivity with observer() wrapper
+ * - Computed values auto-memoized by MobX
+ * 
+ * See src/stores/todo-store.ts for the store implementation
  */
 
-export default function TodoScreen() {
-  const {
-    filteredTodos,
-    addTodo,
-    removeTodo,
-    toggleTodo,
-    setFilter,
-    clearCompleted,
-    completedCount,
-    totalCount,
-    activeCount,
-    state,
-  } = useTodoContext();
-
+export default observer(function TodoScreen() {
+  const { todo } = useStores();
   const [inputValue, setInputValue] = useState('');
 
   const handleAddTodo = () => {
     if (inputValue.trim()) {
-      addTodo(inputValue.trim());
+      todo.addTodo(inputValue.trim());
       setInputValue('');
     }
   };
@@ -45,7 +39,7 @@ export default function TodoScreen() {
     <View style={styles.todoItem}>
       <TouchableOpacity
         style={styles.checkbox}
-        onPress={() => toggleTodo(item.id)}
+        onPress={() => todo.toggleTodo(item.id)}
       >
         <View
           style={[
@@ -68,7 +62,7 @@ export default function TodoScreen() {
 
       <TouchableOpacity
         style={styles.deleteBtn}
-        onPress={() => removeTodo(item.id)}
+        onPress={() => todo.removeTodo(item.id)}
       >
         <Text style={styles.deleteBtnText}>✕</Text>
       </TouchableOpacity>
@@ -82,7 +76,7 @@ export default function TodoScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>📝 Todo App</Text>
-        <Text style={styles.subtitle}>State Management Example</Text>
+        <Text style={styles.subtitle}>MobX State Management</Text>
       </View>
 
       {/* Input Section */}
@@ -102,35 +96,35 @@ export default function TodoScreen() {
 
       {/* Stats */}
       <View style={styles.statsRow}>
-        <StatBox label="Total" value={totalCount} color="#333" />
-        <StatBox label="Active" value={activeCount} color="#4CAF50" />
-        <StatBox label="Done" value={completedCount} color="#2196F3" />
+        <StatBox label="Total" value={todo.totalCount} color="#333" />
+        <StatBox label="Active" value={todo.activeCount} color="#4CAF50" />
+        <StatBox label="Done" value={todo.completedCount} color="#2196F3" />
       </View>
 
       {/* Filter Buttons */}
       <View style={styles.filterRow}>
         <FilterBtn
           label="All"
-          active={state.filter === 'all'}
-          onPress={() => setFilter('all')}
+          active={todo.filter === 'all'}
+          onPress={() => todo.setFilter('all')}
         />
         <FilterBtn
           label="Active"
-          active={state.filter === 'active'}
-          onPress={() => setFilter('active')}
+          active={todo.filter === 'active'}
+          onPress={() => todo.setFilter('active')}
         />
         <FilterBtn
           label="Done"
-          active={state.filter === 'completed'}
-          onPress={() => setFilter('completed')}
+          active={todo.filter === 'completed'}
+          onPress={() => todo.setFilter('completed')}
         />
       </View>
 
       {/* Todo List */}
       <View style={styles.listContainer}>
-        {filteredTodos.length > 0 ? (
+        {todo.filteredTodos.length > 0 ? (
           <FlatList
-            data={filteredTodos}
+            data={todo.filteredTodos}
             renderItem={renderTodoItem}
             keyExtractor={(item) => item.id}
             scrollEnabled={false}
@@ -139,9 +133,9 @@ export default function TodoScreen() {
         ) : (
           <View style={styles.emptyState}>
             <Text style={styles.emptyText}>
-              {state.filter === 'completed'
+              {todo.filter === 'completed'
                 ? '✨ No completed todos'
-                : state.filter === 'active'
+                : todo.filter === 'active'
                   ? '🎉 All done!'
                   : '🚀 Add your first todo'}
             </Text>
@@ -150,14 +144,14 @@ export default function TodoScreen() {
       </View>
 
       {/* Clear Completed */}
-      {completedCount > 0 && (
-        <TouchableOpacity style={styles.clearBtn} onPress={clearCompleted}>
-          <Text style={styles.clearBtnText}>Clear Completed ({completedCount})</Text>
+      {todo.completedCount > 0 && (
+        <TouchableOpacity style={styles.clearBtn} onPress={() => todo.clearCompleted()}>
+          <Text style={styles.clearBtnText}>Clear Completed ({todo.completedCount})</Text>
         </TouchableOpacity>
       )}
     </SafeAreaView>
   );
-}
+});
 
 function StatBox({ label, value, color }: any) {
   return (

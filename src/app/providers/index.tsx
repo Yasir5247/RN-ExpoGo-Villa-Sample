@@ -1,20 +1,20 @@
 import { StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { TodoProvider } from '@/stores';
+import { StoresProvider } from '@/stores';
 
 /**
  * Root Providers
  * 
  * Wraps the app with necessary providers
- * For this demo: only TodoProvider for state management
+ * - StoresProvider: MobX stores (including TodoStore)
  */
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <GestureHandlerRootView style={styles.container}>
-      <TodoProvider>
+      <StoresProvider>
         {children}
-      </TodoProvider>
+      </StoresProvider>
     </GestureHandlerRootView>
   );
 }
