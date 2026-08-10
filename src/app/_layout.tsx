@@ -9,7 +9,7 @@ export default function RootLayout() {
       <Stack.Screen
         name="index"
         options={{
-          title: "Home Screen",
+          title: "Flex (StyleSheet)",
           headerStyle: { backgroundColor: "#000000" },
           headerTintColor: "#fff",
         }}
@@ -17,9 +17,9 @@ export default function RootLayout() {
       <Stack.Screen
         name="details"
         options={{
-          title: "Details",
+          title: "NativeWind",
           headerShown: true,
-          presentation: "modal", // open like a modal
+          presentation: "modal",
         }}
       />
     </Stack>
